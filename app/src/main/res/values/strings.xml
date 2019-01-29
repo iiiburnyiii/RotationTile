@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RotationTile</string>
+    <string name="tile_label">Rotation Tile</string>
+    <string name="btnChange">Change Rotation!</string>
+</resources>
