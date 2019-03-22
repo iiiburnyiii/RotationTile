@@ -2,33 +2,23 @@ package com.example.rotationtile
 
 import android.content.Context
 import android.graphics.drawable.Icon
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations.map
-import kotlin.concurrent.thread
 
 class RotationTileModel(
     private val context: Context
 ) {
 
     private val interactor = RotationInteractor(context)
-    private val tileIcon = MutableLiveData<Icon>()
+    private val currentRotation: Rotation
+        get() = Rotation.getRotationFromSurface(interactor.currentSurface())
 
-    fun changeRotation() = thread {
-        interactor.disableAccelerometerRotation()
-        val nextRotation = currentRotation().nextRotation()
+    val icon: Icon
+        get() = Icon.createWithResource(context, currentRotation.iconRes)
 
-        interactor.changeRotation(nextRotation.surface)
+    fun changeRotation() {
+        val nextRotation = currentRotation.next
 
-        tileIcon.postValue(iconFromRes(nextRotation.iconRes))
+        interactor.stopAccelerometerRotation()
+        interactor.changeSurface(nextRotation.surface)
     }
-
-    fun getTileIconLiveData(): LiveData<Icon> = map(tileIcon) { it }
-
-    private fun currentRotation() =
-        Rotation.getRotation(interactor.currentRotation())
-
-    private fun iconFromRes(iconRes: Int) =
-        Icon.createWithResource(context, iconRes)
 
 }

@@ -7,7 +7,7 @@ class RotationInteractor(
     private val context: Context
 ) {
 
-    fun disableAccelerometerRotation() {
+    fun stopAccelerometerRotation() {
         Settings.System.putInt(
             context.contentResolver,
             Settings.System.ACCELEROMETER_ROTATION,
@@ -15,7 +15,7 @@ class RotationInteractor(
         )
     }
 
-    fun changeRotation(surface: Int) {
+    fun changeSurface(surface: Int) {
         Settings.System.putInt(
             context.contentResolver,
             Settings.System.USER_ROTATION,
@@ -23,7 +23,7 @@ class RotationInteractor(
         )
     }
 
-    fun currentRotation(): Int =
+    fun currentSurface(): Int =
         Settings.System.getInt(
             context.contentResolver,
             Settings.System.USER_ROTATION

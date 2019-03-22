@@ -10,20 +10,22 @@ enum class Rotation(
         surface = Surface.ROTATION_0,
         iconRes = R.drawable.ic_tile_portrait_24dp
     ) {
-        override fun nextRotation() = LANDSCAPE
+        override val next: Rotation
+            get() = LANDSCAPE
     },
     LANDSCAPE(
         surface = Surface.ROTATION_90,
         iconRes = R.drawable.ic_tile_landscape_24dp
     ) {
-        override fun nextRotation() = PORTRAIT
+        override val next: Rotation
+            get() = PORTRAIT
     };
 
-    abstract fun nextRotation(): Rotation
+    abstract val next: Rotation
 
     companion object {
 
-        fun getRotation(surface: Int): Rotation =
+        fun getRotationFromSurface(surface: Int): Rotation =
             when (surface) {
                 Surface.ROTATION_0 -> PORTRAIT
                 Surface.ROTATION_90 -> LANDSCAPE
@@ -32,4 +34,3 @@ enum class Rotation(
 
     }
 }
-

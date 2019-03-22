@@ -1,64 +1,36 @@
 package com.example.rotationtile
 
-import android.graphics.drawable.Icon
-import android.provider.Settings
-import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.Observer
 
-class RotationTileService : TileService(), LifecycleOwner {
+class RotationTileService : TileService() {
 
-    private lateinit var lifecycleRegistry: LifecycleRegistry
+    /**
+     * Or create model instance in onCreate and not reset link in onStop.
+     * Faster surface change, but, as i understand, link is permanently stored in the service.
+    */
+
     private var model: RotationTileModel? = null
 
-    override fun onCreate() {
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.markState(Lifecycle.State.CREATED)
-
-        applicationContext?.let {
-            model = RotationTileModel(it)
-        }
-    }
-
     override fun onStartListening() {
-        lifecycleRegistry.markState(Lifecycle.State.STARTED)
-
-        if (!Settings.System.canWrite(this)) {
-            qsTile?.state = Tile.STATE_UNAVAILABLE
-        }
-
-        observeTileIconChanges()
+        model = RotationTileModel(this)
+        changeTileIcon()
     }
 
     override fun onClick() {
         model?.changeRotation()
-    }
-
-    override fun getLifecycle(): Lifecycle =
-        lifecycleRegistry
-
-    private fun observeTileIconChanges() {
-        model?.getTileIconLiveData()?.observe(this, Observer {
-            changeTileIcon(it)
-        })
-    }
-
-    private fun changeTileIcon(newIcon: Icon) {
-        qsTile?.apply {
-            icon = newIcon
-            updateTile()
-        }
+        changeTileIcon()
     }
 
     override fun onStopListening() {
-        lifecycleRegistry.markState(Lifecycle.State.RESUMED)
+        model = null
     }
 
-    override fun onTileRemoved() {
-        lifecycleRegistry.markState(Lifecycle.State.DESTROYED)
+    private fun changeTileIcon() {
+        if (model != null && qsTile != null)
+            qsTile.apply {
+                icon = model!!.icon
+                updateTile()
+            }
     }
 
 }
